@@ -2,10 +2,6 @@ import argparse
 import re
 
 
-read_consuming_ops = ('M', 'I', 'X')
-ref_consuming_ops = ('M', 'D', 'N', 'X')
-
-
 def get_genomic_position(transcript_info, transcript_pos):
     """ Convert from a transcript coordinate to a corresponding genomic coordinate"""
 
