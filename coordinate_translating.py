@@ -89,8 +89,8 @@ def translate_coordinates(transcripts_input_p, queries_input_p, output_file_p):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Translate from transcript coordinates to genomic coordinates')
-    parser.add_argument('-t', '--transcripts_input_p', help='Path of the transcripts input file.')
-    parser.add_argument('-q', '--queries_input_p', help='Path of the queries input file.')
-    parser.add_argument('-o', '--output_file_p', help='Path of the output file.')
+    parser.add_argument('-t', '--transcripts_input_p', default='inputs/transcripts_inputs.tsv', help='Path of the transcripts input file.')
+    parser.add_argument('-q', '--queries_input_p', default='inputs/queries_inputs.tsv', help='Path of the queries input file.')
+    parser.add_argument('-o', '--output_file_p', default='outputs/output.tsv', help='Path of the output file.')
     args = parser.parse_args()
     translate_coordinates(args.transcripts_input_p, args.queries_input_p, args.output_file_p)
