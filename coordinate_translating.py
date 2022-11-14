@@ -2,11 +2,14 @@ import argparse
 import re
 
 
-def get_genomic_position(transcript_info, transcript_pos):
+def get_genomic_position(transcript_info, transcript_pos, orientation):
     """ Convert from a transcript coordinate to a corresponding genomic coordinate"""
 
     # Breakdown the CIGAR string into each component part, each segment consisting of a cigar length and cigar type
     parsed_cigar = re.findall(r'(\d+)([MXDIN])', transcript_info['cigar'])
+    # If reverse orientation is requested, just reverse the cigar segments
+    if orientation == 'reverse':
+        parsed_cigar = parsed_cigar[::-1]
     # Use the starting point of the transcript as the initial genomic position
     genomic_pos = transcript_info['start']
     # Keep track of how many coordinates within the transcript are accounted for
@@ -38,7 +41,7 @@ def get_genomic_position(transcript_info, transcript_pos):
     return genomic_pos
 
 
-def translate_coordinates(transcripts_input_p, queries_input_p, output_file_p):
+def translate_coordinates(transcripts_input_p, queries_input_p, output_file_p, orientation):
     """ Given 2 input files, one containing information about various transcripts and another containing information
     regarding requested coordinates from a transcript, output the set of translated coordinates"""
 
@@ -76,7 +79,7 @@ def translate_coordinates(transcripts_input_p, queries_input_p, output_file_p):
             raise Exception('Unknown transcript provided in queries input: `{}`'.format(transcript_name))
 
         # Retrieve the genomic position from the requested transcript position
-        genomic_pos = get_genomic_position(transcript_info, transcript_pos)
+        genomic_pos = get_genomic_position(transcript_info, transcript_pos, orientation)
 
         # Combine all of the outputs together and write to the output file
         output = cols + [transcript_info['chrom'], str(genomic_pos)]
@@ -88,5 +91,7 @@ if __name__ == '__main__':
     parser.add_argument('-t', '--transcripts_input_p', default='inputs/transcripts_inputs.tsv', help='Path of the transcripts input file.')
     parser.add_argument('-q', '--queries_input_p', default='inputs/queries_inputs.tsv', help='Path of the queries input file.')
     parser.add_argument('-o', '--output_file_p', default='outputs/output.tsv', help='Path of the output file.')
+    parser.add_argument('--orientation', choices=('forward', 'reverse'), default='forward',
+                        help="Choose forward orientation to indicate 5' to 3', choose reverse orientation to indicate 3' to 5'.")
     args = parser.parse_args()
-    translate_coordinates(args.transcripts_input_p, args.queries_input_p, args.output_file_p)
+    translate_coordinates(args.transcripts_input_p, args.queries_input_p, args.output_file_p, args.orientation)
